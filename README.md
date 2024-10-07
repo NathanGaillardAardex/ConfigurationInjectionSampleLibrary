@@ -32,7 +32,7 @@ public sealed record MyLibraryOptions : IMyLibraryOptions
     public string MyLibraryOption2 { get; init; }
 }
 ```
-## Injecting your options is a piece of cake :)
+### Injecting your options is a piece of cake :)
 To create the option object from the configuration is easily made with a typed `Get` on the configuration object.
 This way, it is also easy to crash (fail fast) the application if the configuration is not valid. Instead of waiting for the first call to the library to fail.
 ```csharp
