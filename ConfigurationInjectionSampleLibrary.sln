@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationInjectionSampleLibrary", "ConfigurationInjectionSampleLibrary\ConfigurationInjectionSampleLibrary.csproj", "{18D64426-BD2C-4D8E-BD0C-CA92E20B7083}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessageWriterLibrary", "MessageWriterLibrary\MessageWriterLibrary.csproj", "{18D64426-BD2C-4D8E-BD0C-CA92E20B7083}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationInjectionSampleClient", "ConfigurationInjectionSampleClient\ConfigurationInjectionSampleClient.csproj", "{0B4A6A02-B264-4324-B2F7-32424D25FFB8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleClient", "SampleClient\SampleClient.csproj", "{0B4A6A02-B264-4324-B2F7-32424D25FFB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

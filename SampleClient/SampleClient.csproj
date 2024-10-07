@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ConfigurationInjectionSampleLibrary\ConfigurationInjectionSampleLibrary.csproj" />
+      <ProjectReference Include="..\MessageWriterLibrary\MessageWriterLibrary.csproj" />
     </ItemGroup>
 
 </Project>
