@@ -6,19 +6,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 // Add the library services to the container, client can stay ignorant of the library's configuration, and inner dependencies
-builder.Services.AddMessageWriterLibrary(builder.Configuration.GetMessageWriterOptions());
+// OR
+/*
+ * var options = new MessageWriterOptions { FirstMessage = "Hello" };
+ */
+builder.Services.AddMessageWriterLibrary(new MessageWriterOptions(builder.Configuration));
 // This doesn't stop the client from adding the services manually, but it's not necessary anymore
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.UseHttpsRedirection();
 

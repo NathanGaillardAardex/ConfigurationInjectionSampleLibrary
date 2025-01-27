@@ -1,4 +1,4 @@
-@WebApplication1_HostAddress = http://localhost:5230
+@WebApplication1_HostAddress = http://localhost:5000
 
 GET {{WebApplication1_HostAddress}}/test/
 Accept: application/json

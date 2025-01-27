@@ -1,15 +1,23 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Configuration;
 
 namespace MessageWriterLibrary;
 
 public sealed record MessageWriterOptions : IMessageWriterOptions
 {
-    public const string MessageWriterConfigurationSectionName = "MessageWriterSettings";
+    public static readonly string MessageWriterConfigurationSectionName = "MessageWriter";
+    
+    public MessageWriterOptions(IConfiguration configuration, string? section = null)
+    {
+        var options = configuration
+            .GetRequiredSection(section ?? MessageWriterConfigurationSectionName);
 
-    // If you decided to use another casing for the configuration keys,
-    // you can use the ConfigurationKeyName attribute
-    [ConfigurationKeyName("first_message")]
-    public required string FirstMessage { get; init; }
-    public required string SecondMessage { get; init; }
+        FirstMessage = options.GetValue<string>(nameof(FirstMessage))
+                       ?? throw new Exception($"{nameof(FirstMessage)} is not present");
+
+        SecondMessage = options.GetValue<string>(nameof(SecondMessage))
+                        ?? SecondMessage;
+    }
+    
+    public string FirstMessage { get; init; }
+    public string SecondMessage { get; init; } = "default second message";
 }

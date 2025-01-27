@@ -5,8 +5,9 @@ Your library should not ask the client to add to its dependent services itself. 
 ```csharp
 public static class MyLibraryServiceExtension
 {
-    public static IServiceCollection AddMyLibrary(this IServiceCollection services)
+    public static IServiceCollection AddMyLibrary(this IServiceCollection services, IMyLibraryOptions options)
     {
+        services.AddSingleton(options);
         services.AddSingleton<IMyLibraryService, MyLibraryService>();
         return services;
     }
@@ -35,36 +36,59 @@ public sealed record MyLibraryOptions : IMyLibraryOptions
 ## Injecting your options is a piece of cake :)
 To create the option object from the configuration is easily made with a typed `Get` on the configuration object.
 This way, it is also easy to crash (fail fast) the application if the configuration is not valid. Instead of waiting for the first call to the library to fail.
+
+If your config object is straightforward, you can use the `Bind` method on the configuration object to bind the configuration to your options object. This prevents you to write custom validation logic.
+
+In .NET, You should use a camelCase name in your configuration source.
+
+If needed, you can use a default value in the Options class to provide a default value if the configuration value is not provided.
+I also recommend using the `init` keyword to make sure the options are immutable, and exposing an optional const with the configuration section name to make sure the client uses the correct section name.
+
 ```csharp
-public static IMyLibraryOptions GetMyLibraryOptions(this IConfiguration configuration)
+// Doing it "manually"
+public sealed record MyLibraryOptions : IMyLibraryOptions
 {
-    return configuration.GetSection("MyLibraryOptions").Get<MyLibraryOptions>()
-        ?? throw new ValidationException("MyLibraryOptions is not configured");
+    public MyLibraryOptions(IConfiguration configuration){
+        var libConfig = configuration.GetSection(SectionName);
+        MyLibraryOption1 = libConfig.GetValue<string>(nameof(MyLibraryOption1))
+            ?? throw new ConfigurationErrorsException("MyLibraryOption1 is required");
+        
+        MyLibraryOption2 = libConfig.GetValue<string>(nameof(MyLibraryOption2))
+            ?? MyLibraryOption2;
+    }
+    
+    public const string SectionName = "MyLibrary";
+    
+    public string MyLibraryOption1 { get; init; }
+    
+    public string MyLibraryOption2 { get; init; } = "default value";
 }
 ```
-If you need to use a different name in your configuration source, you can use ``ConfigurationKeyName`` attribute on the option class.
-
-You can use the required keyword to make sure the configuration is valid.
-Or you can use a default value in the Options class to provide a default value if the configuration value is not provided.
-I also recommend using the `init` keyword to make sure the options are immutable, and exposing a const with the configuration section name to make sure the client uses the correct section name.
 ```csharp
-public record MyLibraryOptions : IMyLibraryOptions
+// Using binding
+public sealed record MyLibraryOptions : IMyLibraryOptions
 {
-    public const string SectionName = "MyLibraryOptions";
-    [ConfigurationKeyName("my_library_option1")]
-    public required string MyLibraryOption1 { get; init; }
-    [ConfigurationKeyName("my_library_option2")]
+    public MyLibraryOptions(IConfiguration configuration){
+        var libConfig = configuration.GetSection(SectionName);
+        libConfig.Bind(this);
+    }
+    
+    public const string SectionName = "MyLibrary";
+    
+    public string MyLibraryOption1 { get; init; }
+    
     public string MyLibraryOption2 { get; init; } = "default value";
 }
 /* Created from:
 {
     "MyLibraryOptions": {
-        "my_library_option1": "value1",
-        "my_library_option2": "override default value"
+        "MyLibraryOption1": "value1",
+        "MyLibraryOption2": "override default value"
     }
 }
 */
 ```
+
 You can then use the options in your library like this:
 ```csharp
 public static class MyLibraryServiceExtension
@@ -78,5 +102,17 @@ public static class MyLibraryServiceExtension
 }
 ```
 ```csharp
-builder.Services.AddMyLibrary(builder.Configuration.GetMyLibraryOptions());
+builder.Services.AddMyLibrary(new MyLibraryOptions(builder.Configuration));
 ```
+
+# App Configuration
+In Azure App Configuration, nested json are not allowed.
+You should, for example, use a colon to separate the sections.
+```json
+{
+    "MyLibraryOptions:MyLibraryOption1": "value1",
+    "MyLibraryOptions:MyLibraryOption2": "override default value"
+}
+```
+
+For usage in Azure App Configuration, your appsettings.json should only contain the connection string to the Azure App Configuration, as well as the current Environment (usually prod).

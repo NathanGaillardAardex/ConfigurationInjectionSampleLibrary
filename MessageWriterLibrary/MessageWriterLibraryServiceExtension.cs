@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace MessageWriterLibrary;
 
@@ -24,8 +22,4 @@ public static class MessageWriterLibraryServiceExtension
     {
         serviceCollection.AddSingleton(options);
     }
-    
-    public static IMessageWriterOptions GetMessageWriterOptions(this IConfiguration configuration) =>
-        configuration.GetRequiredSection(MessageWriterOptions.MessageWriterConfigurationSectionName).Get<MessageWriterOptions>()
-        ?? throw new ValidationException();
 }
